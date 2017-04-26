@@ -40,11 +40,11 @@ def file_read(file_flights):
 
 
 def separate_according_to_bags(flights, bags):
-    """Seperate the number of available flights according to number of needed bags"""
+    """Separate the number of available flights according to number of needed bags"""
 
     nflights = []
     for flight in flights:
-        if int(flight.bags_allowed) >= bags:
+        if flight.bags_allowed >= bags:
             nflights.append(flight)
     return nflights
 
