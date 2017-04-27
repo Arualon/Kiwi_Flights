@@ -49,11 +49,34 @@ def separate_according_to_bags(flights, bags):
     return nflights
 
 
+def list_connections(nflight,flights,connections):
+    connections.append(nflight)
+    flight_connections = nflight.find_connections(flights)
+    if flight_connections != []:
+        for flight in flight_connections:
+            list_connections(flight,flights,connections)
+            connections.pop(len(connections)-1)
+    else:
+        print ("     %s" % (connections))
+        connections = []
+
+# def validate_and_print_result(connections):
+
+
 bags = 0
 
 flights = file_read(sys.stdin)
 flights = separate_according_to_bags(flights, bags)
 
-# available_flights=flights[1].find_connections(flights)
-# for flight in available_flights:
-#     print(flight)
+for flight in flights:
+    print (flight)
+    list_connections(flight,flights,[])
+    print("******************************************************************************************************************")
+
+# i = 0
+# for flight in flights:
+#     i+=1
+#     print ("%s \n" % (i))
+#     available_flights=flight.find_connections(flights)
+#     for flight in available_flights:
+#         print("     %s" % (flight))
