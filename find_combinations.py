@@ -88,31 +88,11 @@ def validate_and_print_result(connections, bags):
 
 data = sys.stdin.readlines()
 
-print("///////////////////////////////////// 0 BAGS ///////////////////////////////////////////////////")
-bags = 0
+for bags in range(0,3,1):
+    print("///////////////////////////////////// %s BAGS ///////////////////////////////////////////////////" % (bags))
 
-flights = file_read(data)
-flights = separate_according_to_bags(flights, bags)
+    flights = file_read(data)
+    flights = separate_according_to_bags(flights, bags)
 
-for flight in flights:
-    list_connections(flight, flights, [], bags)
-
-
-print("///////////////////////////////////// 1 BAGS ///////////////////////////////////////////////////")
-bags = 1
-
-flights = file_read(data)
-flights = separate_according_to_bags(flights, bags)
-
-for flight in flights:
-    list_connections(flight, flights, [], bags)
-
-
-print("///////////////////////////////////// 2 BAGS ///////////////////////////////////////////////////")
-bags = 2
-
-flights = file_read(data)
-flights = separate_according_to_bags(flights, bags)
-
-for flight in flights:
-    list_connections(flight, flights, [], bags)
+    for flight in flights:
+        list_connections(flight, flights, [], bags)
