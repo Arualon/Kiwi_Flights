@@ -83,16 +83,12 @@ def validate_and_print_result(connections, bags):
         print(str(price) + " €")
 
 
-
-
-
-data = sys.stdin.readlines()
+flights = file_read(sys.stdin)
 
 for bags in range(0,3,1):
     print("///////////////////////////////////// %s BAGS ///////////////////////////////////////////////////" % (bags))
 
-    flights = file_read(data)
-    flights = separate_according_to_bags(flights, bags)
+    bag_available_flights = separate_according_to_bags(flights, bags)
 
-    for flight in flights:
-        list_connections(flight, flights, [], bags)
+    for flight in bag_available_flights:
+        list_connections(flight, bag_available_flights, [], bags)
