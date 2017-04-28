@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 from datetime import timedelta
 
+
 class Flight(object):
     """Class for flight"""
 
@@ -19,7 +20,9 @@ class Flight(object):
     def __repr__(self):
         return "{},{},{},{},{},{},{},{}".format(self.source, self.destination, self.departure, self.arrival, self.flight_number, str(self.price), str(self.bags_allowed), str(self.bag_price))
 
-    def find_connections(self,flights):
+    def find_connections(self, flights):
+        """Find all available flights from self to somewhere (in flights) according to limitations: 1-4 hours between flights.. Keep in mind, that condition for bags is not here. Function separate_according_to_bags is for that"""
+
         available_flights = []
         for flight in flights:
             if (self.destination == flight.source) and (timedelta(hours=4) >= (flight.departure - self.arrival)) and ((flight.departure - self.arrival) >= timedelta(hours=1)):
@@ -28,7 +31,7 @@ class Flight(object):
 
 
 def file_read(file_flights):
-    """Reading flights  from file"""
+    """Reading flights from file"""
 
     flights = []
     reader = csv.DictReader(file_flights)
@@ -49,34 +52,67 @@ def separate_according_to_bags(flights, bags):
     return nflights
 
 
-def list_connections(nflight,flights,connections):
+def list_connections(nflight, flights, connections, bags):
+    """Find list of all consecutive flights from nflight in flights"""
+
     connections.append(nflight)
     flight_connections = nflight.find_connections(flights)
     if flight_connections != []:
         for flight in flight_connections:
-            list_connections(flight,flights,connections)
-            connections.pop(len(connections)-1)
+            list_connections(flight, flights, connections, bags)
+            connections.pop(len(connections) - 1)
     else:
-        print ("     %s" % (connections))
+        validate_and_print_result(connections, bags)
         connections = []
 
-# def validate_and_print_result(connections):
+
+def validate_and_print_result(connections, bags):
+    """Validates consecutive flights to meet conditions: A-B-A is valid, A-B-A-B is not valid"""
+
+    for i in range(0, len(connections), 1):
+        for k in range(i + 1, len(connections), 1):
+            if (connections[k].source == connections[i].source) and (connections[k].destination == connections[i].destination):
+                connections = connections[0:k - 1:1]
+                break
+    if len(connections) > 1:
+        price = 0
+        print("%s -> " % (connections[0].source), end="")
+        for flight in connections:
+            print("%s" % (flight.destination), end=" -> ")
+            price += flight.price + bags * flight.bag_price
+        print(str(price) + " €")
 
 
+
+
+
+data = sys.stdin.readlines()
+
+print("///////////////////////////////////// 0 BAGS ///////////////////////////////////////////////////")
 bags = 0
 
-flights = file_read(sys.stdin)
+flights = file_read(data)
 flights = separate_according_to_bags(flights, bags)
 
 for flight in flights:
-    print (flight)
-    list_connections(flight,flights,[])
-    print("******************************************************************************************************************")
+    list_connections(flight, flights, [], bags)
 
-# i = 0
-# for flight in flights:
-#     i+=1
-#     print ("%s \n" % (i))
-#     available_flights=flight.find_connections(flights)
-#     for flight in available_flights:
-#         print("     %s" % (flight))
+
+print("///////////////////////////////////// 1 BAGS ///////////////////////////////////////////////////")
+bags = 1
+
+flights = file_read(data)
+flights = separate_according_to_bags(flights, bags)
+
+for flight in flights:
+    list_connections(flight, flights, [], bags)
+
+
+print("///////////////////////////////////// 2 BAGS ///////////////////////////////////////////////////")
+bags = 2
+
+flights = file_read(data)
+flights = separate_according_to_bags(flights, bags)
+
+for flight in flights:
+    list_connections(flight, flights, [], bags)
